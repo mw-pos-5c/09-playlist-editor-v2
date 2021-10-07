@@ -1,0 +1,52 @@
+<div class="container">
+  <div class="header">
+    <div class="header-column">
+      <span>Playlist: </span>
+      <select (ngModelChange)="selectedPlaylistChanged($event)" [(ngModel)]="selectedPlaylist">
+        <option disabled value="-1">Select Track</option>
+        <option *ngFor="let playlist of playlists" [value]="playlist.id">{{playlist.name}}</option>
+      </select>
+    </div>
+    <span class="header-column">Numberof tracks: <span>{{tracks.length}}</span></span>
+    <span class="header-column">Total playtime: <span>{{totalPlaytime}}</span></span>
+    <button (click)="showAddTrack = true" [disabled]="selectedPlaylist === '-1'">Add new track</button>
+  </div>
+  <app-track-add (trackSelected)="addTrackSelected($event)" *ngIf="showAddTrack"></app-track-add>
+  <table>
+    <thead>
+    <tr>
+      <th>
+        Track #
+      </th>
+      <th>
+        Name
+      </th>
+      <th>
+        Album
+      </th>
+      <th>
+        Genre
+      </th>
+      <th>
+        Length
+      </th>
+      <th>
+
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of tracks">
+      <td>{{row.id}}</td>
+      <td>{{row.name}}</td>
+      <td>{{row.albumId}}</td>
+      <td>{{row.genreId}}</td>
+      <td>{{dataProvider.formatDuration(+row.milliseconds)}}</td>
+      <td>
+        <button (click)="deleteTrackFromPlaylist(row.id)">Delete</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
