@@ -12,57 +12,36 @@ namespace PlaylistEditor.Utils
 {
     public class CsvParser
     {
-        public static List<TLine> ParseCsvFile<TLine>(string filename) where TLine : class
+
+        public delegate object ParseLine(string[] line);
+        
+        public static List<TLine> ParseCsvFile<TLine>(string filename, ParseLine parseFunc) where TLine : class
         {
             using var reader = new StreamReader(Path.Combine("Resources/csv", filename));
-            string line;
-
+            reader.ReadLine();
             var result = new List<TLine>();
-            
+            string line;
             while ((line = reader.ReadLine()) != null)
             {
                 line = Regex.Replace(line, "\"", "");
                 string[] row = line.Split(',');
-
-                TLine lineObj;
+                TLine parsedLine;
                 try
                 {
-                    switch (typeof(TLine))
-                    {
-                        case var type when type == typeof(Playlist):
-                            lineObj = ParsePlaylist(row) as TLine;
-                            break;
-                        default: continue;
-                    }
-
+                    parsedLine = parseFunc(row) as TLine;
                 }
-                catch (FormatException)
+                catch (FormatException )
                 {
                     continue;
                 }
 
-                if (lineObj == null)
+                if (parsedLine == null)
                 {
                     continue;
                 }
-                
-                result.Add(lineObj);
+                result.Add(parsedLine);
             }
-
             return result;
         }
-
-        private static Playlist ParsePlaylist(string[] line)
-        {
-            if (line.Length != 2) return null;
-
-            return new Playlist {
-                Id = int.Parse(line[0]),
-                Name = line[1]
-            };
-        }
-        
-        private static 
-
     }
 }
